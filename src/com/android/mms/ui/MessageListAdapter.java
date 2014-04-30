@@ -314,7 +314,7 @@ public class MessageListAdapter extends CursorAdapter {
                 do {
                     long id = cursor.getLong(mRowIDColumn);
                     String type = cursor.getString(mColumnsMap.mColumnMsgType);
-                    if ((id == item.mMsgId) && type.equals(item.mType)) {
+                    if (id == item.mMsgId && (type != null && type.equals(item.mType))) {
                         return cursor;
                     }
                 } while (cursor.moveToNext());
