@@ -31,6 +31,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -362,6 +363,11 @@ public class MessagingPreferenceActivity extends PreferenceActivity
         mEnableNotificationsPref = (CheckBoxPreference) findPreference(NOTIFICATION_ENABLED);
         mEnablePrivacyModePref = (CheckBoxPreference) findPreference(PRIVACY_MODE_ENABLED);
         mVibratePref = (CheckBoxPreference) findPreference(NOTIFICATION_VIBRATE);
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (mVibratePref != null && (vibrator == null || !vibrator.hasVibrator())) {
+            mNotificationPrefCategory.removePreference(mVibratePref);
+            mVibratePref = null;
+        }
         mRingtonePref = (RingtonePreference) findPreference(NOTIFICATION_RINGTONE);
         mManageTemplate = findPreference(MANAGE_TEMPLATES);
         mGestureSensitivity = (ListPreference) findPreference(GESTURE_SENSITIVITY);
@@ -476,7 +482,7 @@ public class MessagingPreferenceActivity extends PreferenceActivity
 
         // If needed, migrate vibration setting from a previous version
         final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (sharedPreferences.contains(NOTIFICATION_VIBRATE_WHEN)) {
+        if (mVibratePref != null && sharedPreferences.contains(NOTIFICATION_VIBRATE_WHEN)) {
             String vibrateWhen = sharedPreferences.
                     getString(MessagingPreferenceActivity.NOTIFICATION_VIBRATE_WHEN, null);
             boolean vibrate = "always".equals(vibrateWhen);
